@@ -27,8 +27,9 @@ X = [ones(m, 1) X];
 %       
 
 
-
-
+PMat = sigmoid(all_theta * X');
+[C p] = max(PMat);
+p = p(:);
 
 
 

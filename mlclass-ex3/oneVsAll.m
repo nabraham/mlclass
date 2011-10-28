@@ -17,6 +17,24 @@ all_theta = zeros(num_labels, n + 1);
 % Add ones to the X data matrix
 X = [ones(m, 1) X];
 
+options = optimset('GradObj', 'on', 'MaxIter', 400);
+
+for k=1:num_labels
+    tic;
+    fprintf('Training multiclass %d of %d\n',k,num_labels);
+    % Initialize fitting parameters
+    initial_theta = zeros(size(X, 2), 1);
+    
+    y_p = zeros(size(y));
+    y_p(y==k) = 1;
+    [theta, J, exit_flag] = ...
+        fminunc(@(t)(lrCostFunction(t,X,y_p,lambda)), initial_theta, options);
+    all_theta(k,:) = theta;
+    toc
+end
+    
+    
+
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the following code to train num_labels
 %               logistic regression classifiers with regularization
