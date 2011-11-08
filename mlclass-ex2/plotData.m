@@ -11,7 +11,10 @@ figure; hold on;
 %               2D plot, using the option 'k+' for the positive
 %               examples and 'ko' for the negative examples.
 %
-
+pIndx = (y == 1);
+nIndx = (y == 0);
+plot(X(pIndx,1), X(pIndx,2), 'k+', 'LineWidth', 2, 'MarkerSize', 7);
+plot(X(nIndx,1), X(nIndx,2), 'ko', 'MarkerFaceColor', 'y', 'MarkerSize', 7);
 
 
 
