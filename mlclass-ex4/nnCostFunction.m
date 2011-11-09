@@ -26,9 +26,8 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 m = size(X, 1);
          
 % You need to return the following variables correctly 
-J = 0;
-Theta1_grad = zeros(size(Theta1));
-Theta2_grad = zeros(size(Theta2));
+% Theta1_grad = zeros(size(Theta1));
+% Theta2_grad = zeros(size(Theta2));
 
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the code by working through the
@@ -69,23 +68,34 @@ Z2 = Theta1 * [ones(m,1) X]';
 A2 = sigmoid(Z2);
 Z3 = Theta2 * [ones(1,m); A2];
 PRED = sigmoid(Z3);
-[y i] = max(PRED);
+
+Yv = zeros(num_labels * m, 1);
+col = 0:m-1;
+Yv(num_labels*col + y') = 1;
+Y = reshape(Yv,num_labels,m);
 
 
+J = (1/m)*sum(sum(-Y.*log(PRED) - (1-Y).*log(1-PRED))) + ...
+    (lambda/(2*m)) * ( sum(sum(Theta1(:,2:end).^2)) + ...
+    sum(sum(Theta2(:,2:end).^2)));
 
+% Part 2: gradents
 
+d3 = zeros(num_labels,1);
+D1 = zeros(size(Theta1));
+D2 = zeros(size(Theta2));
+for t=1:m
+    for k=1:num_labels
+        d3(k) = PRED(k,t) - Y(k,t);
+        d2 = Theta2' * d3 .* sigmoidGradient([1; Z2(:,t)]);
+        d2 = d2(2:end);
+        D1 = D1 + d2*[1 X(t,:)];
+        D2 = D2 + d3*[1; A2(:,t)]';
+    end
+end
 
-
-
-
-
-
-
-
-
-
-
-
+Theta1_grad = D1 / m;
+Theta2_grad = D2 / m;
 
 % -------------------------------------------------------------
 
