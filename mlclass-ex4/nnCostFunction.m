@@ -80,24 +80,27 @@ J = (1/m)*sum(sum(-Y.*log(PRED) - (1-Y).*log(1-PRED))) + ...
     sum(sum(Theta2(:,2:end).^2)));
 
 % Part 2: gradents
+D3 = PRED - Y;
 
-d3 = zeros(num_labels,1);
-D1 = zeros(size(Theta1));
-D2 = zeros(size(Theta2));
-for t=1:m
-    for k=1:num_labels
-        d3(k) = PRED(k,t) - Y(k,t);
-        d2 = Theta2' * d3 .* sigmoidGradient([1; Z2(:,t)]);
-        d2 = d2(2:end);
-        D1 = D1 + d2*[1 X(t,:)];
-        D2 = D2 + d3*[1; A2(:,t)]';
-    end
-end
+% DELTA_1 = zeros(size(Theta1));
+% DELTA_2 = zeros(size(Theta2));
+% for t=1:m
+%     d3 = D3(:,t);
+%     d2 = Theta2' * d3 .* sigmoidGradient([1; Z2(:,t)]);
+%     d2 = d2(2:end);
+%     DELTA_1 = DELTA_1 + d2*[1 X(t,:)];
+%     DELTA_2 = DELTA_2 + d3*[1; A2(:,t)]';
+% end
 
-Theta1_grad = D1 / m;
-Theta2_grad = D2 / m;
+D2 = Theta2' * D3 .* sigmoidGradient([ones(1,size(Z2,2)); Z2]);
+DELTA_1 = D2(2:end,:) * [ones(m,1) X];
+DELTA_2 = D3 * [ones(1,size(A2,2)); A2]';
 
-% -------------------------------------------------------------
+Theta1(:,1) = 0;
+Theta2(:,1) = 0;
+Theta1_grad = DELTA_1 / m + (lambda / m) * Theta1;
+Theta2_grad = DELTA_2 / m + (lambda / m) * Theta2;
+
 
 % =========================================================================
 
